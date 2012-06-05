@@ -72,16 +72,16 @@ def p_expresion(p):
                  | expresion TkMayorIgual expresion
                  | expresion TkConjuncion expresion
                  | expresion TkDisyuncion expresion'''
-    p[0] = ast.OpBinaria(p[1],p[2],p[3]).show()
+    p[0] = ast.OpBinaria(p[1],p[2],p[3])
 
 #Expresion puede ser numero, booleano, o variable
 def p_expresion_TkNum(p):
     'expresion : TkNum'
-    p[0] = ast.Num(p[1]).show()
+    p[0] = ast.Num(p[1])
 
 def p_expresion_TkIdent(p):
     'expresion : TkIdent'
-    p[0] = ast.Ident(p[1]).show()
+    p[0] = ast.Ident(p[1])
 
 def p_expresion_TkBoolean(p):
     'expresion : TkBoolean'
@@ -150,5 +150,3 @@ while True:
     result = parser.parse(s)
     print result
 
-#Parsear
-ast.show()
