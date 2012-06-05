@@ -3,12 +3,23 @@
 #
 #---------------------------------------------------------
 
+# COMENTARIOS IMPORTANTES
+#
+# Se deben sustituir todas las operaciones debajo
+# de cada produccion por las operaciones referentes
+# a las clases de ArbolSintaxis.
+# 
+
 #Imports
 from ply import yacc as yacc 
 import Lexer
+import ArbolSintaxis
 
 #Se Extraen Los Tokens
 tokens = Lexer.tokens
+
+#Se crea un arbol
+ast = ArbolSintaxis.Arbol
 
 #Precedencias
 precedence = (
@@ -65,31 +76,7 @@ def p_expresion(p):
                  | expresion TkConjuncion expresion
                  | expresion TkDisyuncion expresion'''
     if p[2] == '+':
-        p[0] = p[1] + p[3]
-    elif p[2] == '-':
-        p[0] = p[1] - p[3]
-    elif p[2] == '*':
-        p[0] = p[1] * p[3]
-    elif p[2] == '/':
-        p[0] = p[1] / p[3]
-    elif p[2] == '%':
-        p[0] = p[1] % p[3]
-    elif p[2] == '<':
-        p[0] = p[1] < p[3]
-    elif p[2] == '>':
-        p[0] = p[1] > p[3]
-    elif p[2] == '=':
-        p[0] = p[1] == p[3]
-    elif p[2] == '/=':
-        p[0] = p[1] != p[3]
-    elif p[2] == '<=':
-        p[0] = p[1] <= p[3]
-    elif p[2] == '>=':
-        p[0] = p[1] >= p[3]
-    elif p[2] == '/\\':
-        p[0] = p[1] and p[3]
-    elif p[2] == '\\/':
-        p[0] = p[1] or p[3]
+        ast.OpBinaria(p[1],p[2],p[3])
 
 #Expresion puede ser numero, booleano, o variable
 def p_expresion_TkNum(p):
