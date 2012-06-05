@@ -13,13 +13,10 @@
 #Imports
 from ply import yacc as yacc 
 import Lexer
-import ArbolSintaxis
+import ArbolSintaxis as ast
 
 #Se Extraen Los Tokens
 tokens = Lexer.tokens
-
-#Se crea un arbol
-ast = ArbolSintaxis.Arbol
 
 #Precedencias
 precedence = (
@@ -75,17 +72,16 @@ def p_expresion(p):
                  | expresion TkMayorIgual expresion
                  | expresion TkConjuncion expresion
                  | expresion TkDisyuncion expresion'''
-    if p[2] == '+':
-        ast.OpBinaria(p[1],p[2],p[3])
+    p[0] = ast.OpBinaria(p[1],p[2],p[3]).show()
 
 #Expresion puede ser numero, booleano, o variable
 def p_expresion_TkNum(p):
     'expresion : TkNum'
-    p[0] = p[1]
+    p[0] = ast.Num(p[1]).show()
 
 def p_expresion_TkIdent(p):
     'expresion : TkIdent'
-    p[0] = p[1]
+    p[0] = ast.Ident(p[1]).show()
 
 def p_expresion_TkBoolean(p):
     'expresion : TkBoolean'
@@ -141,15 +137,18 @@ def p_expresion_Paren(p):
 def p_error(p):
     print "Error de Sintaxis"
 
-#Constructor del Parser
+#Construimos el Parser
 parser = yacc.yacc()
 
-#Parsear
 while True:
-   try:
-       s = raw_input('AsGaRd > ')
-   except EOFError:
-       break
-   if not s: continue
-   result = parser.parse(s)
-   print result
+    try:
+        s = raw_input('AsGArD >')
+    except EOFError:
+        break
+    if not s: 
+        continue
+    result = parser.parse(s)
+    print result
+
+#Parsear
+ast.show()

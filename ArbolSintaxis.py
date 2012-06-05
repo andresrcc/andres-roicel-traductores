@@ -13,14 +13,20 @@ class Arbol:
         self.der  = der
         self.op   = op
 
-
+    def show(self):
+        print "Prueba:\n"
+        printme = "Tipo: " + self.tipo + "\n" + \
+            "Nodo Izq: " + self.izq + "\n" + \
+            "Nodo Op: " + self.op + "\n" + \
+            "Nodo Der: " + self.der
+        print printme
 
 class Expresion(Arbol):
     "Representa las expresiones del lenguaje"
     pass
 
 class Instruccion(Arbol):
-    "Represenita las instrucciones del lenguaje"
+    "Representa las instrucciones del lenguaje"
     pass
 
 #Operacion Binaria (Nodo)
@@ -74,7 +80,11 @@ class OpBinaria(Expresion):
 
     def show(self):
         """ Imprime el valor del nodo OpBinaria"""
-        printme = str(self.izq) + str(self.op) + str(self.der)
+        print
+        printme = "-operacion: " +self.operacion + "\n" \
+           + "-tipo: " + self.tipo + "\n" \
+           + "-operando izquierdo " + str(self.izq) + "\n" \
+           + "-operando derecho " + str(self.der) + "\n"
         print printme
 
 
@@ -108,7 +118,8 @@ class BoolN(Expresion):
         printme = 'BOOL ' + self.valor
         print printme
 
-#Probando el modulo
+
+#Area de Prueba del Modulo
 if __name__ == "__main__":    
     print "Probando los metodos show de las clases"
 
