@@ -7,7 +7,8 @@
 
 class Arbol:
     "Representa al Arbol de Sintaxis Abstracta"
-    def __init__(self,izq,op,der):
+    def __init__(self,izq,op,der,tipo):
+        self.tipo = tipo
         self.izq  = izq
         self.der  = der
         self.op   = op
@@ -31,6 +32,46 @@ class OpBinaria(Expresion):
         self.der  = der
         self.op   = op
 
+        if op == '+':
+            self.operacion = 'Suma'
+            self.tipo = 'integer'
+        elif op == '-':
+            self.operacion = 'Resta'
+            self.tipo = 'integer'
+        elif op == '*':
+            self.operacion = 'Multiplicacion'
+            self.tipo = 'integer'
+        elif op == '/':
+            self.operacion = 'Division'
+            self.tipo = 'integer' 
+        elif op == '%':
+            self.operacion = 'Modulo'
+            self.tipo = 'integer' 
+        elif op == '<':
+            self.operacion = 'Menor Estricto que'
+            self.tipo = 'boolean'
+        elif op == '>':
+            self.operacion = 'Mayor Estricto que'
+            self.tipo = 'boolean'
+        elif op == '=':
+            self.operacion = 'Igual'
+            self.tipo = 'boolean'
+        elif op == '/=':
+            self.operacion = 'Desigual'
+            self.tipo = 'boolean'
+        elif op == '<=':
+            self.operacion = 'Menor o Igual que'
+            self.tipo = 'boolean'
+        elif op == '<=':
+            self.operacion = 'Mayor o Igual que'
+            self.tipo = 'boolean'
+        elif op == '/\\':
+            self.operacion = 'Conjuncion'
+            self.tipo = 'boolean'
+        elif op == '\\/':
+            self.operacion = 'Disyuncion'
+            self.tipo = 'boolean'
+
     def show(self):
         """ Imprime el valor del nodo OpBinaria"""
         printme = str(self.izq) + str(self.op) + str(self.der)
@@ -42,10 +83,10 @@ class Num(Expresion):
     "Clase Num: Representa los numeros del lenguaje"
     def __init__(self,valor):
         self.valor = valor
-
     def show(self):
         """ Imprime el valor del nodo Num"""
-        print self.valor
+        printme = 'INT_LITERAL ' + str(self.valor)
+        print printme
 
 class Ident(Expresion):
     "Representa los identificadores del lenguaje"
@@ -54,15 +95,18 @@ class Ident(Expresion):
 
     def show(self):
         """ Imprime el Valor del nodo Ident"""
-        print self.valor
+        printme = 'VAR ' + str(self.valor)
+        print printme
 
 class BoolN(Expresion):
     "Clase BoolN: Representa los Valores Booleanos del Lenguaje"
     def __init__(self,valor):
         self.valor = valor
+
     def show(self):
         """ Imprime el valor del nodo BoolN"""
-        print self.valor
+        printme = 'BOOL ' + self.valor
+        print printme
 
 #Probando el modulo
 if __name__ == "__main__":    
@@ -90,6 +134,8 @@ if __name__ == "__main__":
     (a,b,c) = s.split()
     h = OpBinaria(a,b,c)
     h.show()
+    print "Tipo de la operacion: " + h.tipo
+    print "Operacion: " + h.operacion
 
     print "Clase BoolN:\n"
     s = raw_input('Escriba un valor booleano: ')
