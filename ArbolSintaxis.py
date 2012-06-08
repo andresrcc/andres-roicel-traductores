@@ -28,6 +28,7 @@ class Expresion(Arbol):
 class Instruccion(Arbol):
     """Representa las instrucciones del lenguaje"""
     pass
+#################################       Subclases para las expresiones       ##############################
 
 #Expresion Binaria (Nodo)
 class ExpBinaria(Expresion):
@@ -100,7 +101,7 @@ class ExpBinaria(Expresion):
 class Num(Expresion):
     """Clase Num: Representa los numeros del lenguaje"""
     def __init__(self,valor):
-        self.tipo = None
+        self.tipo = 'integer'
         self.izq = None
         self.der = None
         self.valor = valor
@@ -113,7 +114,7 @@ class Num(Expresion):
 class Ident(Expresion):
     """Clase Ident: Representa los identificadores del lenguaje"""
     def __init__(self,valor):
-        self.tipo = None
+        self.tipo = 'ident'
         self.izq = None
         self.der = None
         self.valor = valor
@@ -126,7 +127,7 @@ class Ident(Expresion):
 class BoolN(Expresion):
     """Clase BoolN: Representa los Valores Booleanos del Lenguaje"""
     def __init__(self,valor):
-        self.tipo = None
+        self.tipo = 'boolean'
         self.izq = None
         self.der = None
         self.valor = valor
@@ -134,22 +135,6 @@ class BoolN(Expresion):
     def show(self, profundidad):
         indentar = ' '*profundidad
         print indentar + 'BOOL_LITERAL ' + str(self.valor)
-
-# Clase para la asignacion
-class Asignacion(Instruccion):
-    """Clase Asignacion: Representa una asignacion en el Lenguaje"""
-    def __init__(self,izq,valor,der):
-        self.tipo = None
-        self.izq = izq
-        self.der = der
-        self.valor = valor
-
-    def show(self, profundidad):
-        indentar = ' '*profundidad
-        print indentar + '-var: '
-        self.izq.show(profundidad + 1)
-        print indentar + '-val: '
-        self.der.show(profundidad + 1)
 
 # Clase para los lienzos
 class Lienzo(Expresion):
@@ -175,23 +160,85 @@ class UResta(Expresion):
         indentar = ' '*profundidad
         print indentar + 'INT_LITERAL ' + str(self.valor)
 
-#Area de Prueba del Modulo
+############################       Fin subclases para las expresions       ###########################
+
+
+############################       Subclases para las instrucciones        ###########################
+
+# Clase para la asignacion
+class Asignacion(Instruccion):
+    """Clase Asignacion: Representa una asignacion en el Lenguaje"""
+    def __init__(self,izq,valor,der):
+        self.tipo = 'ASIGNACION'
+        self.izq = izq
+        self.der = der
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + '- var: '
+        self.izq.show(profundidad + 2)
+        print indentar + '- val: '
+        self.der.show(profundidad + 2)
+
+# Clase para la repeticion indeterminada
+class RepeticionIndeterminada(Instruccion):
+    def __init__(self,izq,der):
+        self.tipo = 'REPETICIONINDETERMINADA'
+        self.izq = izq
+        self.der = der
+        self.valor = None
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + '- guardia: '
+        print 'EXPRESIONBINARIA'
+        self.izq.show(profundidad + 2)
+        print indentar + '- exito: '
+        print indentar + str(self.der.tipo)
+        self.der.show(profundidad + 2)
+
+###########################        Fin subclases para las instrucciones        #######################
+
+# Area de Prueba del Modulo
 if __name__ == "__main__":
     print "Probando los metodos show de las clases"
 
-#Probando los identificadores
+###########################      Prueba de expresiones       #############################
+
+# Probando los identificadores
     print "Clase Ident:\n"
     s = raw_input('Escriba el nombre de un identificador: ')
     print "\nEl metodo show imprime: "
     Ident(s).show(0)
+    print "\n"
 
-#Probando los numeros
+# Probando los numeros
     print "Clase Num:\n"
     s = raw_input('Escriba un numero: ')
     print "\nEl metodo show imprime: "
     Num(s).show(0)
+    print "\n"
 
-#Probando las operaciones binarias:
+# Probando booleanos
+    print "Clase BoolN:\n"
+    s = raw_input('Escriba un valor booleano: ')
+    print "\nEl metodo show imprime: "
+    BoolN(s).show(0)
+    print "\n"
+
+# Probando expresiones binarias
+    print "Clase ExpBinaria:\n"
+    s = raw_input('Escriba una expresion binaria (de numeros): ')
+    print "\nEl metodo show imprime: "
+    (a,b,c) = s.split()
+    ExpBinaria(Num(a),b,Num(c)).show(0)
+    print "\n"
+
+########################       Fin de prueba de expresiones       ########################
+
+
+########################       Prueba de instrucciones        ########################
 
     print "Clase Asignacion:\n"
     s = raw_input('Escriba una asignacion (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
@@ -199,7 +246,10 @@ if __name__ == "__main__":
     (a,b,c) = s.split()
     Asignacion(Ident(a),b,Num(c)).show(0)
 
-    print "Clase BoolN:\n"
-    s = raw_input('Escriba un valor booleano: ')
+    print "Clase Repeticion Indeterminada:\n"
+    s = raw_input('Escriba una repeticion indeterminada (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
     print "\nEl metodo show imprime: "
-    i = BoolN(s).show(0)
+    (a,b,c,d,e,f,g,h,i) = s.split()
+    RepeticionIndeterminada(ExpBinaria(BoolN(b),c,BoolN(d)),Asignacion(Ident(f),g,Num(h))).show(0)
+
+########################       Fin de prueba de instrucciones       ######################
