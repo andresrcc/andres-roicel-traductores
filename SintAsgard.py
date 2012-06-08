@@ -3,7 +3,6 @@
 #
 #---------------------------------------------------------
 
-
 #Imports
 from ply import yacc as yacc
 import Lexer
@@ -25,8 +24,13 @@ precedence = (
     ('right', 'UTkResta'),
 )
 
-#Gramatica Inicial
+#Gramatica
 #Instrucciones
+
+#Regla inicial
+def p_instruccion(p):
+    '''instruccion : instruccion TkPuntoYComa instruccion
+                   | asignacion'''
 
 #Expresion puede ser operacion binaria
 def p_expresion_opbinaria(p):
@@ -42,7 +46,9 @@ def p_expresion_opbinaria(p):
                  | expresion TkMenorIgual expresion
                  | expresion TkMayorIgual expresion
                  | expresion TkConjuncion expresion
-                 | expresion TkDisyuncion expresion'''
+                 | expresion TkDisyuncion expresion
+                 | expresion TkHorConcat expresion
+                 | expresion TkVerConcat expresion'''
     p[0] = ast.ExpBinaria(p[1],p[2],p[3])
 
 #Expresion unaria del simbolo menos
@@ -50,7 +56,7 @@ def p_expresion_umenos(p):
     'expresion : TkResta expresion %prec UTkResta'
     p[0] = ast.UResta(-p[2])
 
-#Expresion puede ser numero, booleano, o variable
+#Expresion puede ser numero, booleano, variable o lienzo
 def p_expresion_TkNum(p):
     'expresion : TkNum'
     p[0] = ast.Num(p[1])
@@ -60,11 +66,20 @@ def p_expresion_TkIdent(p):
     p[0] = ast.Ident(p[1])
 
 # Booleano puede ser verdadero o falso
-
 def p_expresion_TkBoolean(p):
     '''expresion : TkTrue
                  | TkFalse'''
     p[0] = ast.BoolN(p[1])
+
+# Lienzos
+def p_expresion_TkLienzo(p):
+    'expresion : TkLienzo'
+    p[0] = ast.Lienzo(p[1])
+
+# Asignacion
+def p_asignacion(p):
+    'asignacion : TkIdent TkAsignacion expresion'
+    p[0] = ast.Asignacion(p[1],p[2],p[3])
 
 # Errores de Sintaxis
 def p_error(p):

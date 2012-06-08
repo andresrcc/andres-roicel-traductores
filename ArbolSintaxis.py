@@ -76,6 +76,12 @@ class ExpBinaria(Expresion):
         elif self.valor == '\\/':
             self.operacion = 'Disyuncion'
             self.tipo = 'boolean'
+        elif self.valor == ':':
+            self.operacion = 'Concatenacion Horizontal'
+            self.tipo = 'lienzo'
+        elif self.valor == '|':
+            self.operacion = 'Concatenacion Vertical'
+            self.tipo = 'lienzo'
 
     def show(self, profundidad):
         indentar = ' '*profundidad
@@ -89,6 +95,8 @@ class ExpBinaria(Expresion):
             self.der.show(profundidad + 2)
 
 #Hojas
+
+# Clase para los numeros
 class Num(Expresion):
     """Clase Num: Representa los numeros del lenguaje"""
     def __init__(self,valor):
@@ -101,8 +109,9 @@ class Num(Expresion):
         indentar = ' '*profundidad
         print indentar + 'INT_LITERAL ' + str(self.valor)
 
+# Clase para los identificadores
 class Ident(Expresion):
-    """Representa los identificadores del lenguaje"""
+    """Clase Ident: Representa los identificadores del lenguaje"""
     def __init__(self,valor):
         self.tipo = None
         self.izq = None
@@ -113,6 +122,7 @@ class Ident(Expresion):
         indentar = ' '*profundidad
         print indentar + 'VAR ' + str(self.valor)
 
+# Clase para los booleanos
 class BoolN(Expresion):
     """Clase BoolN: Representa los Valores Booleanos del Lenguaje"""
     def __init__(self,valor):
@@ -124,6 +134,35 @@ class BoolN(Expresion):
     def show(self, profundidad):
         indentar = ' '*profundidad
         print indentar + 'BOOL_LITERAL ' + str(self.valor)
+
+# Clase para la asignacion
+class Asignacion(Instruccion):
+    """Clase Asignacion: Representa una asignacion en el Lenguaje"""
+    def __init__(self,izq,valor,der):
+        self.tipo = None
+        self.izq = izq
+        self.der = der
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + '-var: '
+        self.izq.show(profundidad + 1)
+        print indentar + '-val: '
+        self.der.show(profundidad + 1)
+
+# Clase para los lienzos
+class Lienzo(Expresion):
+    """Clase Lienzo: Representa los Valores Lienzos del Lenguaje"""
+    def __init__(self,valor):
+        self.tipo = None
+        self.izq = None
+        self.der = None
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + 'LIENZO_LITERAL ' + str(self.valor)
 
 class UResta(Expresion):
     def __init__(self,valor):
@@ -154,15 +193,13 @@ if __name__ == "__main__":
 
 #Probando las operaciones binarias:
 
-    print "Clase OpBinaria:\n"
-    s = raw_input('Escriba una operacion binaria (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
+    print "Clase Asignacion:\n"
+    s = raw_input('Escriba una asignacion (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
     print "\nEl metodo show imprime: "
     (a,b,c) = s.split()
-    h = ExpBinaria(a,b,c)
-    print h.show(0)
+    Asignacion(Ident(a),b,Num(c)).show(0)
 
     print "Clase BoolN:\n"
     s = raw_input('Escriba un valor booleano: ')
     print "\nEl metodo show imprime: "
     i = BoolN(s).show(0)
-    print i
