@@ -28,6 +28,18 @@ class Expresion(Arbol):
 class Instruccion(Arbol):
     """Representa las instrucciones del lenguaje"""
     pass
+
+# Clase para manejar la regla inicial
+class Inicial(Arbol):
+    """Representa la regla inicial"""
+    def __init__(self,valor):
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + str(self.valor.tipo)
+        self.valor.show(profundidad)
+
 #################################       Subclases para las expresiones       ##############################
 
 #Expresion Binaria (Nodo)
@@ -176,7 +188,6 @@ class Secuenciacion(Instruccion):
 
     def show(self, profundidad):
         indentar = ' '*profundidad
-        print indentar + str(self.tipo)
         print indentar + '  ' + str(self.izq.tipo)
         self.izq.show(profundidad + 2)
         print indentar + '  ' + str(self.der.tipo)
@@ -236,6 +247,49 @@ class RepeticionDeterminada(Instruccion):
         print indentar + '- instruccion: '
         print indentar + '  ' + str(self.der.tipo)
         self.der.show(profundidad + 2)
+
+# Clase para el condicional
+class Condicional(Instruccion):
+    def __init__(self,izq,der,valor = None):
+        self.tipo = 'CONDICIONAL'
+        self.izq = izq
+        self.der = der
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + '- guardia: '
+        print indentar + '  ' + 'EXPRESIONBINARIA'
+        self.izq.show(profundidad + 2)
+        print indentar + '- exito: '
+        print indentar + '  '  + str(self.der.tipo)
+        self.der.show(profundidad + 2)
+        if self.valor:
+            print indentar + '- fracaso: '
+            print indentar + '  '  + str(self.valor.tipo)
+            self.valor.show(profundidad + 2)
+
+# Clase para leer la entrada (read)
+class Entrada(Instruccion):
+   def __init__(self,valor):
+       self.tipo = 'ENTRADA/READ'
+       self.valor = valor
+
+   def show(self, profundidad):
+       indentar = ' '*profundidad
+       print indentar + '- read: '
+       self.valor.show(profundidad+2)
+
+# Clase para imprimir la salida (print)
+class Salida(Instruccion):
+   def __init__(self,valor):
+       self.tipo = 'SALIDA/PRINT'
+       self.valor = valor
+
+   def show(self, profundidad):
+       indentar = ' '*profundidad
+       print indentar + '- print: '
+       self.valor.show(profundidad+2)
 
 ###########################        Fin subclases para las instrucciones        #######################
 
@@ -306,5 +360,26 @@ if __name__ == "__main__":
     print "\nEl metodo show imprime: "
     (a,b,c,d,e,f,g) = s.split()
     Secuenciacion(Asignacion(Ident(a),b,Num(c)), Asignacion(Ident(e),f,Num(g))).show(0)
+
+# Probando condicional
+    print "Clase Condicional:\n"
+    s = raw_input('Escriba un condicional (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
+    print "\nEl metodo show imprime: "
+    (a,b,c,d,e,f,g) = s.split()
+    Condicional(BoolN(b), Asignacion(Ident(d),e,Num(f))).show(0)
+
+# Probando read
+    print "Clase Entrada:\n"
+    s = raw_input('Escriba un read (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
+    print "\nEl metodo show imprime: "
+    (a,b) = s.split()
+    Entrada(Ident(b)).show(0)
+
+# Probando print
+    print "Clase Salida:\n"
+    s = raw_input('Escriba un print (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
+    print "\nEl metodo show imprime: "
+    (a,b) = s.split()
+    Salida(Lienzo(b)).show(0)
 
 ########################       Fin de prueba de instrucciones       ######################

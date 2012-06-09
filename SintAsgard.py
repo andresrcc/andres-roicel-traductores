@@ -11,6 +11,7 @@
 #
 
 #Imports
+import sys
 from ply import yacc as yacc
 import Lexer
 import ArbolSintaxis as ast
@@ -34,28 +35,93 @@ precedence = (
 
 #Gramatica
 
-#Regla inicial
-def p_instruccion(p):
+# Regla inicial
+def p_inicial(p):
+    '''INICIAL : TkUsing IDENTIFICADORES TkOfType TIPOVAR TkBegin INSTRUCCION TkEnd
+               | TkBegin INSTRUCCION TkEnd'''
+    if len(p) > 4:
+        p[0] = ast.Inicial(p[6])
+    else:
+        p[0] = ast.Inicial(p[2])
+
+# Regla para los identificadores de using
+def p_lista_using(p):
+    'IDENTIFICADORES : IDENTIFICADORES TkComa TkIdent'
+
+# Identificador del using
+def p_ident_using(p):
+    'IDENTIFICADORES : TkIdent'
+
+#Regla para la incorporacion de alcance
+def p_incorporacion_alcance(p):
+    '''INSTRUCCION : TkUsing IDENTIFICADORES TkOfType TIPOVAR TkBegin INSTRUCCION TkEnd
+                   | TkBegin INSTRUCCION TkEnd'''
+    if len(p) > 4:
+        p[0] = ast.Inicial(p[6])
+    else:
+        p[0] = ast.Inicial(p[2])
+
+#Regla para la secuenciacion
+def p_secuenciacion(p):
     'INSTRUCCION : INSTRUCCION TkPuntoYComa INSTRUCCION'
     p[0] = ast.Secuenciacion(p[1],p[3])
 
 ##################################           Instrucciones           #################################
 # Asignacion
 def p_asignacion(p):
-    'INSTRUCCION : EXPRESION TkAsignacion EXPRESION'
+    'INSTRUCCION : IDENTIFICADOR TkAsignacion EXPRESION'
     p[0] = ast.Asignacion(p[1],p[2],p[3])
 
+# Repeticion indeterminada
 def p_repeticion_indeterminada(p):
     'INSTRUCCION : TkWhile EXPRESION TkRepeat INSTRUCCION TkDone'
     p[0] = ast.RepeticionIndeterminada(p[2],p[4])
 
+# Repeticion determinada
 def p_repeticion_determinada(p):
-    '''INSTRUCCION : TkWith EXPRESION TkFrom EXPRESION TkTo EXPRESION TkRepeat INSTRUCCION TkDone
+    '''INSTRUCCION : TkWith IDENTIFICADOR TkFrom EXPRESION TkTo EXPRESION TkRepeat INSTRUCCION TkDone
                    | TkFrom EXPRESION TkTo EXPRESION TkRepeat INSTRUCCION TkDone'''
     if len(p) > 8:
         p[0] = ast.RepeticionDeterminada(p[4],p[6],p[8],p[2])
     else:
         p[0] = ast.RepeticionDeterminada(p[2],p[4],p[6])
+
+# Condicional
+def p_condicional(p):
+    '''INSTRUCCION : TkIf EXPRESION TkThen INSTRUCCION TkElse INSTRUCCION TkDone
+                   | TkIf EXPRESION TkThen INSTRUCCION TkDone'''
+    if len(p) > 6:
+        p[0] = ast.Condicional(p[2],p[4],p[6])
+    else:
+        p[0] = ast.Condicional(p[2],p[4])
+
+# Leer entrada (read)
+def p_read_entrada(p):
+    'INSTRUCCION : TkRead IDENTIFICADOR'
+    p[0] = ast.Entrada(p[2])
+
+# Imprimir (print)
+def p_print_salida(p):
+    'INSTRUCCION : TkPrint LIENZO'
+    p[0] = ast.Salida(p[2])
+
+# Identificador de repeticion determinada
+# y asignacion
+def p_ident_asig_repdet(p):
+    'IDENTIFICADOR : TkIdent'
+    p[0] = ast.Ident(p[1])
+
+# Lienzo de la instruccion print
+def p_lienzo_print(p):
+    'LIENZO : TkLienzo'
+    p[0] = ast.Lienzo(p[1])
+
+# Tipos de las variables de una incorporacion
+# de alcance
+def p_tipo_var(p):
+    '''TIPOVAR : TkInteger
+               | TkBoolean
+               | TkCanvas'''
 
 ##################################           Fin Instrucciones           #############################
 
@@ -110,6 +176,7 @@ def p_expresion_TkLienzo(p):
 # Errores de Sintaxis
 def p_error(p):
     print "Error de Sintaxis"
+    sys.exit()
 
 #Construimos el Parser
 parser = yacc.yacc()
