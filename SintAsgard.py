@@ -20,6 +20,7 @@ tokens = Lexer.tokens
 
 #Precedencias
 precedence = (
+    ('left', 'TkPuntoYComa'),
     ('nonassoc', 'TkAsignacion'),
     ('left', 'TkDisyuncion'),
     ('left', 'TkConjuncion'),
@@ -32,13 +33,31 @@ precedence = (
 )
 
 #Gramatica
-#Instrucciones
 
 #Regla inicial
 def p_instruccion(p):
-    '''INSTRUCCION : INSTRUCCION TkPuntoYComa INSTRUCCION
-                   | ASIGNACION
-                   | REPETICIONINDETERMINADA'''
+    'INSTRUCCION : INSTRUCCION TkPuntoYComa INSTRUCCION'
+    p[0] = ast.Secuenciacion(p[1],p[3])
+
+##################################           Instrucciones           #################################
+# Asignacion
+def p_asignacion(p):
+    'INSTRUCCION : EXPRESION TkAsignacion EXPRESION'
+    p[0] = ast.Asignacion(p[1],p[2],p[3])
+
+def p_repeticion_indeterminada(p):
+    'INSTRUCCION : TkWhile EXPRESION TkRepeat INSTRUCCION TkDone'
+    p[0] = ast.RepeticionIndeterminada(p[2],p[4])
+
+def p_repeticion_determinada(p):
+    '''INSTRUCCION : TkWith EXPRESION TkFrom EXPRESION TkTo EXPRESION TkRepeat INSTRUCCION TkDone
+                   | TkFrom EXPRESION TkTo EXPRESION TkRepeat INSTRUCCION TkDone'''
+    if len(p) > 8:
+        p[0] = ast.RepeticionDeterminada(p[4],p[6],p[8],p[2])
+    else:
+        p[0] = ast.RepeticionDeterminada(p[2],p[4],p[6])
+
+##################################           Fin Instrucciones           #############################
 
 ###########################            Expresiones            #############################
 
@@ -87,19 +106,6 @@ def p_expresion_TkLienzo(p):
     p[0] = ast.Lienzo(p[1])
 
 ##################################           Fin Expresiones          ################################
-
-
-##################################           Instrucciones           #################################
-# Asignacion
-def p_asignacion(p):
-    'ASIGNACION : TkIdent TkAsignacion EXPRESION'
-    p[0] = ast.Asignacion(p[1],p[2],p[3])
-
-def p_repeticion_indeterminada(p):
-    'REPETICIONINDETERMINADA : TkWhile EXPRESION TkRepeat INSTRUCCION TkDone'
-    p[0] = ast.RepeticionIndeterminada(p[2],p[4])
-
-##################################           Fin Instrucciones           #############################
 
 # Errores de Sintaxis
 def p_error(p):

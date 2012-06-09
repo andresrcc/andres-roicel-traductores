@@ -165,6 +165,23 @@ class UResta(Expresion):
 
 ############################       Subclases para las instrucciones        ###########################
 
+# Clase para la secuenciacion
+class Secuenciacion(Instruccion):
+    """Clase Secuenciacion: Representa la secuenciacion del Lenguaje"""
+    def __init__(self,izq,der):
+        self.tipo = 'SECUENCIACION'
+        self.izq = izq
+        self.der = der
+        self.valor = None
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + str(self.tipo)
+        print indentar + '  ' + str(self.izq.tipo)
+        self.izq.show(profundidad + 2)
+        print indentar + '  ' + str(self.der.tipo)
+        self.der.show(profundidad + 2)
+
 # Clase para la asignacion
 class Asignacion(Instruccion):
     """Clase Asignacion: Representa una asignacion en el Lenguaje"""
@@ -192,10 +209,32 @@ class RepeticionIndeterminada(Instruccion):
     def show(self, profundidad):
         indentar = ' '*profundidad
         print indentar + '- guardia: '
-        print 'EXPRESIONBINARIA'
+        print indentar + '  ' + 'EXPRESIONBINARIA'
         self.izq.show(profundidad + 2)
         print indentar + '- exito: '
-        print indentar + str(self.der.tipo)
+        print indentar + '  '  + str(self.der.tipo)
+        self.der.show(profundidad + 2)
+
+# Clase para la repeticion determinada
+class RepeticionDeterminada(Instruccion):
+    def __init__(self,izq,med,der,valor = None):
+        self.tipo = 'REPETICIONDETERMINADA'
+        self.izq = izq
+        self.med = med
+        self.der = der
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        if self.valor:
+            print indentar + '- dummy: '
+            self.valor.show(profundidad + 2)
+        print indentar + '- limite inferior: '
+        self.izq.show(profundidad + 2)
+        print indentar + '- limite superior: '
+        self.med.show(profundidad + 2)
+        print indentar + '- instruccion: '
+        print indentar + '  ' + str(self.der.tipo)
         self.der.show(profundidad + 2)
 
 ###########################        Fin subclases para las instrucciones        #######################
@@ -240,16 +279,32 @@ if __name__ == "__main__":
 
 ########################       Prueba de instrucciones        ########################
 
+# Probando asignacion
     print "Clase Asignacion:\n"
     s = raw_input('Escriba una asignacion (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
     print "\nEl metodo show imprime: "
     (a,b,c) = s.split()
     Asignacion(Ident(a),b,Num(c)).show(0)
 
+# Probando repeticion indeterminada
     print "Clase Repeticion Indeterminada:\n"
     s = raw_input('Escriba una repeticion indeterminada (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
     print "\nEl metodo show imprime: "
     (a,b,c,d,e,f,g,h,i) = s.split()
     RepeticionIndeterminada(ExpBinaria(BoolN(b),c,BoolN(d)),Asignacion(Ident(f),g,Num(h))).show(0)
+
+# Probando repeticion determinada
+    print "Clase Repeticion Determinada:\n"
+    s = raw_input('Escriba una repeticion determinada (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
+    print "\nEl metodo show imprime: "
+    (a,b,c,d,e,f,g,h,i,j,k) = s.split()
+    RepeticionDeterminada(Num(d),Num(f),Asignacion(Ident(h),i,Num(j)),Ident(b)).show(0)
+
+# Probando secuenciacion
+    print "Clase Secuenciacion:\n"
+    s = raw_input('Escriba una secuenciacion (USE ESPACIOS ENTRE LOS SIMBOLOS): ')
+    print "\nEl metodo show imprime: "
+    (a,b,c,d,e,f,g) = s.split()
+    Secuenciacion(Asignacion(Ident(a),b,Num(c)), Asignacion(Ident(e),f,Num(g))).show(0)
 
 ########################       Fin de prueba de instrucciones       ######################
