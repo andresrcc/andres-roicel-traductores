@@ -31,14 +31,15 @@ class Instruccion(Arbol):
 
 # Clase para manejar la regla inicial
 class Inicial(Arbol):
-    """Representa la regla inicial"""
+    """Representa la regla inicial y la incorporacion de alcance"""
     def __init__(self,valor):
+        self.tipo = 'INCORPORACIONALCANCE'
         self.valor = valor
 
     def show(self, profundidad):
         indentar = ' '*profundidad
         print indentar + str(self.valor.tipo)
-        self.valor.show(profundidad)
+        self.valor.show(profundidad + 2)
 
 #################################       Subclases para las expresiones       ##############################
 
@@ -152,7 +153,7 @@ class BoolN(Expresion):
 class Lienzo(Expresion):
     """Clase Lienzo: Representa los Valores Lienzos del Lenguaje"""
     def __init__(self,valor):
-        self.tipo = None
+        self.tipo = 'lienzo'
         self.izq = None
         self.der = None
         self.valor = valor
@@ -161,7 +162,9 @@ class Lienzo(Expresion):
         indentar = ' '*profundidad
         print indentar + 'LIENZO_LITERAL ' + str(self.valor)
 
-class UResta(Expresion):
+# Clase para las expresiones parentizadas
+class Parentizada(Expresion):
+    """Clase Parentizada: Representa las expresiones parentizadas"""
     def __init__(self,valor):
         self.tipo = None
         self.izq = None
@@ -169,13 +172,67 @@ class UResta(Expresion):
         self.valor = valor
 
     def show(self, profundidad):
+        self.valor.show(profundidad)
+
+# Clase para los enteros negativos
+class UResta(Expresion):
+    def __init__(self,valor):
+        self.tipo = 'integer'
+        self.izq = None
+        self.der = None
+        self.valor = valor
+
+    def show(self, profundidad):
         indentar = ' '*profundidad
-        print indentar + 'INT_LITERAL ' + str(self.valor)
+        print indentar + 'NEGATIVO'
+        self.valor.show(profundidad)
 
-############################       Fin subclases para las expresions       ###########################
+# Clase para las negaciones booleanas
+class Negacion(Expresion):
+    """Clase Negacion: Representa las negaciones booleanas"""
+    def __init__(self,valor):
+        self.tipo = 'boolean'
+        self.izq = None
+        self.der = None
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + 'NEGACION'
+        self.valor.show(profundidad)
+
+# Clase para la rotacion de los lienzos
+class Rotacion(Expresion):
+    """Clase Rotacion: Representa las rotaciones de los lienzos"""
+    def __init__(self,valor):
+        self.tipo = 'lienzo'
+        self.izq = None
+        self.der = None
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + 'ROTACION'
+        self.valor.show(profundidad)
+
+# Clase para la trasposicion de los lienzos
+class Trasposicion(Expresion):
+    """Clase Trasposicion: Representa las trasposiciones de los lienzos"""
+    def __init__(self,valor):
+        self.tipo = 'lienzo'
+        self.izq = None
+        self.der = None
+        self.valor = valor
+
+    def show(self, profundidad):
+        indentar = ' '*profundidad
+        print indentar + 'TRASPOSICION'
+        self.valor.show(profundidad)
+
+############################       Fin subclases para las expresiones       ###########################
 
 
-############################       Subclases para las instrucciones        ###########################
+############################       Subclases para las instrucciones        ############################
 
 # Clase para la secuenciacion
 class Secuenciacion(Instruccion):
@@ -188,9 +245,9 @@ class Secuenciacion(Instruccion):
 
     def show(self, profundidad):
         indentar = ' '*profundidad
-        print indentar + '  ' + str(self.izq.tipo)
+        print indentar + str(self.izq.tipo)
         self.izq.show(profundidad + 2)
-        print indentar + '  ' + str(self.der.tipo)
+        print indentar + str(self.der.tipo)
         self.der.show(profundidad + 2)
 
 # Clase para la asignacion

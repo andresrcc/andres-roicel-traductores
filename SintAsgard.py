@@ -28,21 +28,33 @@ precedence = (
     ('nonassoc', 'TkIgual', 'TkDesigual'),
     ('nonassoc', 'TkMenor', 'TkMayor',
      'TkMenorIgual', 'TkMayorIgual'),
+    ('left', 'TkHorConcat', 'TkVerConcat'),
     ('left', 'TkSuma', 'TkResta'),
     ('left', 'TkMult', 'TkDiv', 'TkMod'),
     ('right', 'UTkResta'),
+    ('left', 'TkNegacion'),
+    ('left', 'TkRot'),
+    ('left', 'TkTras'),
 )
 
 #Gramatica
 
 # Regla inicial
 def p_inicial(p):
-    '''INICIAL : TkUsing IDENTIFICADORES TkOfType TIPOVAR TkBegin INSTRUCCION TkEnd
+    '''INICIAL : TkUsing DECLARACION TkBegin INSTRUCCION TkEnd
                | TkBegin INSTRUCCION TkEnd'''
     if len(p) > 4:
-        p[0] = ast.Inicial(p[6])
+        p[0] = ast.Inicial(p[4])
     else:
         p[0] = ast.Inicial(p[2])
+
+# Regla para listas de declaraciones de variables
+def p_muchas_declaraciones(p):
+    'DECLARACION : DECLARACION TkPuntoYComa IDENTIFICADORES TkOfType TIPOVAR'
+
+# Regla para una lista de declaracion de variables
+def p_una_declaracion(p):
+    'DECLARACION : IDENTIFICADORES TkOfType TIPOVAR'
 
 # Regla para los identificadores de using
 def p_lista_using(p):
@@ -52,21 +64,22 @@ def p_lista_using(p):
 def p_ident_using(p):
     'IDENTIFICADORES : TkIdent'
 
-#Regla para la incorporacion de alcance
+##########################           Instrucciones           #########################
+
+# Incorporacion de alcance
 def p_incorporacion_alcance(p):
-    '''INSTRUCCION : TkUsing IDENTIFICADORES TkOfType TIPOVAR TkBegin INSTRUCCION TkEnd
+    '''INSTRUCCION : TkUsing DECLARACION TkBegin INSTRUCCION TkEnd
                    | TkBegin INSTRUCCION TkEnd'''
     if len(p) > 4:
-        p[0] = ast.Inicial(p[6])
+        p[0] = ast.Inicial(p[4])
     else:
         p[0] = ast.Inicial(p[2])
 
-#Regla para la secuenciacion
+# Secuenciacion
 def p_secuenciacion(p):
     'INSTRUCCION : INSTRUCCION TkPuntoYComa INSTRUCCION'
     p[0] = ast.Secuenciacion(p[1],p[3])
 
-##################################           Instrucciones           #################################
 # Asignacion
 def p_asignacion(p):
     'INSTRUCCION : IDENTIFICADOR TkAsignacion EXPRESION'
@@ -105,8 +118,13 @@ def p_print_salida(p):
     'INSTRUCCION : TkPrint LIENZO'
     p[0] = ast.Salida(p[2])
 
-# Identificador de repeticion determinada
-# y asignacion
+##########################           Fin Instrucciones           ######################
+
+
+############       Expresiones particulares de ciertas instrucciones       ############
+
+# Identificador de repeticion
+# determinada, asignacion y read
 def p_ident_asig_repdet(p):
     'IDENTIFICADOR : TkIdent'
     p[0] = ast.Ident(p[1])
@@ -123,9 +141,10 @@ def p_tipo_var(p):
                | TkBoolean
                | TkCanvas'''
 
-##################################           Fin Instrucciones           #############################
+############  Fin de las expresiones particulares de ciertas instrucciones  ############
 
-###########################            Expresiones            #############################
+
+#########################            Expresiones            ############################
 
 #Expresion puede ser operacion binaria
 def p_expresion_opbinaria(p):
@@ -146,12 +165,39 @@ def p_expresion_opbinaria(p):
                  | EXPRESION TkVerConcat EXPRESION'''
     p[0] = ast.ExpBinaria(p[1],p[2],p[3])
 
-#Expresion unaria del simbolo menos
+# Expresion parentizada
+def p_expresion_parentizada(p):
+    'EXPRESION : TkParAbre EXPRESION TkParCierra'
+    p[0] = ast.Parentizada(p[2])
+
+######################        Expresiones unarias         ######################
+
+#Simbolo menos
 def p_expresion_umenos(p):
     'EXPRESION : TkResta EXPRESION %prec UTkResta'
-    p[0] = ast.UResta(-p[2])
+    p[0] = ast.UResta(p[2])
 
-#Expresion puede ser numero, booleano, variable o lienzo
+#Negacion booleana
+def p_expresion_negacion(p):
+    'EXPRESION : EXPRESION TkNegacion'
+    p[0] = ast.Negacion(p[1])
+
+#Rotacion de lienzo
+def p_expresion_rotacion(p):
+    'EXPRESION : TkRot EXPRESION'
+    p[0] = ast.Rotacion(p[2])
+
+#Trasposicion de lienzo
+def p_expresion_trasposicion(p):
+    'EXPRESION : EXPRESION TkTras'
+    p[0] = ast.Trasposicion(p[1])
+
+#######################  Fin de las expresiones unarias   ######################
+
+
+######################      Valor de las expresiones     #######################
+
+#Expresion puede ser numero, variable, lienzo o booleano
 def p_expresion_TkNum(p):
     'EXPRESION : TkNum'
     p[0] = ast.Num(p[1])
@@ -160,18 +206,20 @@ def p_expresion_TkIdent(p):
     'EXPRESION : TkIdent'
     p[0] = ast.Ident(p[1])
 
+def p_expresion_TkLienzo(p):
+    'EXPRESION : TkLienzo'
+    p[0] = ast.Lienzo(p[1])
+
 # Booleano puede ser verdadero o falso
 def p_expresion_TkBoolean(p):
     '''EXPRESION : TkTrue
                  | TkFalse'''
     p[0] = ast.BoolN(p[1])
 
-# Lienzos
-def p_expresion_TkLienzo(p):
-    'EXPRESION : TkLienzo'
-    p[0] = ast.Lienzo(p[1])
+######################  Fin de valor de las expresiones  #######################
 
-##################################           Fin Expresiones          ################################
+#############################     Fin Expresiones     ##########################
+
 
 # Errores de Sintaxis
 def p_error(p):
