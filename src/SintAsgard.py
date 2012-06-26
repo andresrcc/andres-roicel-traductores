@@ -11,6 +11,9 @@ import sys
 from ply import yacc as yacc
 import Lexer
 import ArbolSintaxis as ast
+import TablaSimbolos
+
+tabla = TablaSimbolos.Ambiente()
 
 #Se Extraen Los Tokens
 tokens = Lexer.tokens
@@ -51,15 +54,16 @@ def p_muchas_declaraciones(p):
 # Regla para una lista de declaracion de variables
 def p_una_declaracion(p):
     'DECLARACION : IDENTIFICADORES TkOfType TIPOVAR'
+    
 
 # Regla para los identificadores de using
 def p_lista_using(p):
     'IDENTIFICADORES : IDENTIFICADORES TkComa TkIdent'
-
+    p[0] = p[0].append(p[1].append(p[3])) 
 # Identificador del using
 def p_ident_using(p):
     'IDENTIFICADORES : TkIdent'
-
+    p[0] = p[0].append(p[1]) 
 ##########################           Instrucciones           #########################
 
 # Incorporacion de alcance

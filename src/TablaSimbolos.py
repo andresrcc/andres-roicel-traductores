@@ -1,43 +1,42 @@
 from collections import OrderedDict
 
-class Ambiente(list):
+#AMBIENTE SERA HASH TABLE EN PYTHON
+class Ambiente(dict):
     """El Ambiente es el conjunto de tablas de simbolos 
     generadas por declaraciones de variables de un 
     programa en AsGArD. Es implementado como 
     una pila de tablas de simbolos.
     """
 
+#Agrega un nuevo alcance a la tabla de simbolos
+    def agregar(self,alcance):
+        if len(self) == 0:
+            self['0'] = alcance
+        else:
+            self[str(len(self))] = alcance
 
+#Obtiene el tipo de un simbolo en la tabla
+#jerarquica de simbolos
+    def tipo(self,simbolo):
+        nivel = len(self)-1 #comenzamos en el ultimo nivel
+        print nivel
+        print self[str(nivel)]
+        while nivel >= 0:
+            alcance = self.get(str(nivel))
+            print alcance
+            if simbolo in alcance:
+                return alcance[simbolo]
+            nivel = nivel - 1
+        return "Variable no declarada previamente"
 
 if __name__ == "__main__":
-    print "Probando la clase ambiente"
-    l = dict(x='int',y='bool',z='int')
+    l = dict({'x':'int', 'b':'bool', 'c':'int'})
     k = Ambiente()
-    k.append(l)
-    m = dict(x='bool',d='bool',f='bool')
-    k.append(m)
-    print "El Ambiente contiene las tablas de simbolos \
-generadas por todas las declaraciones en orden"
-    print "Entonces, por ejemplo podemos distinguir una variable x local de tipo bool"
-    print "de una variable x global de tipo int"
-    print "Veamos este Ambiente como ejemplo"
+    k.agregar(l)
     print k
-    p = k.pop()
-    print "Popeamos la ultima tabla creada (tabla actual): "
-    print p
-    print "La tabla jerarquica queda: "
+    m = dict({'x':'bool', 'a':'int','d':'bool'})
+    k.agregar(m)
     print k
-    print "Busquemos el tipo de la variable x"
-    t = p['x']
-    print "El tipo de la variable x local es:"
-    print t
-    print "Buscando en la otra tabla (contexto global): "
-    m = k.pop()
-    print m
-    mm = m['x']
-    print "El tipo de la variable x global es:"
-    print mm
-    k.append(m)
-    k.append(p)
-    print "Rearmamos la tabla de simbolos"
-    print k
+    print "Averiguemos el tipo de una variable"
+    s = raw_input("Introduzca la variable: ")
+    print k.tipo(s)
