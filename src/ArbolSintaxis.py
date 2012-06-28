@@ -50,6 +50,7 @@ class Inicial(Arbol):
         indentar = ' '*profundidad
         print indentar + str(self.valor.tipo)
         self.valor.show(profundidad + 2)
+    
 
 #################################       Subclases para las expresiones       ##############################
 
@@ -123,7 +124,7 @@ class ExpBinaria(Expresion):
             print indentar + '- operando derecho: '
             self.der.show(profundidad + 2)
 
-    def do(self):
+    def evaluar(self):
         if self.valor == '+':
             return (self.izq.do() + self.der.do())
         elif self.valor == '-':
@@ -171,7 +172,7 @@ class Num(Expresion):
         indentar = ' '*profundidad
         print indentar + 'INT_LITERAL ' + str(self.valor)
 
-    def do(self):
+    def evaluar(self):
         return int(self.valor)
 
 # Clase para los identificadores
@@ -187,7 +188,7 @@ class Ident(Expresion):
         indentar = ' '*profundidad
         print indentar + 'VAR ' + str(self.valor)
 
-    def do(self):
+    def evaluar(self):
         return self.valor
 
 # Clase para los booleanos
@@ -203,7 +204,7 @@ class BoolN(Expresion):
         indentar = ' '*profundidad
         print indentar + 'BOOL_LITERAL ' + str(self.valor)
 
-    def do(self):
+    def evaluar(self):
         return bool(self.valor)
 
 # Clase para los lienzos
@@ -219,6 +220,9 @@ class Lienzo(Expresion):
         indentar = ' '*profundidad
         print indentar + 'LIENZO_LITERAL ' + str(self.valor)
 
+    def evaluar(self):
+        return self.valor
+
 # Clase para las expresiones parentizadas
 class Parentizada(Expresion):
     """Las expresiones parentizadas"""
@@ -230,6 +234,9 @@ class Parentizada(Expresion):
 
     def show(self, profundidad):
         self.valor.show(profundidad)
+
+    def evaluar(self):
+        return self.valor
 
 # Clase para los enteros negativos
 class UResta(Expresion):
@@ -245,6 +252,9 @@ class UResta(Expresion):
         print indentar + 'NEGATIVO'
         self.valor.show(profundidad)
 
+    def evaluar(self):
+        return (-int(self.valor))
+
 # Clase para las negaciones booleanas
 class Negacion(Expresion):
     """Las negaciones booleanas."""
@@ -258,6 +268,9 @@ class Negacion(Expresion):
         indentar = ' '*profundidad
         print indentar + 'NEGACION'
         self.valor.show(profundidad)
+
+    def evaluar(self):
+        return not bool(self.valor)
 
 # Clase para la rotacion de los lienzos
 class Rotacion(Expresion):

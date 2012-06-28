@@ -59,11 +59,11 @@ def p_una_declaracion(p):
 # Regla para los identificadores de using
 def p_lista_using(p):
     'IDENTIFICADORES : IDENTIFICADORES TkComa TkIdent'
-    p[0] = p[0].append(p[1].append(p[3])) 
+ #   p[0] = p[0].append(p[1].append(p[3])) 
 # Identificador del using
 def p_ident_using(p):
     'IDENTIFICADORES : TkIdent'
-    p[0] = p[0].append(p[1]) 
+  #  p[0] = p[0].append(p[1]) 
 ##########################           Instrucciones           #########################
 
 # Incorporacion de alcance
